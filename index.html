@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Uploader</title>
+</head>
+
+<body>
+    <h2>Upload a PDF File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required>
+        <button type="submit">Upload</button>
+    </form>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('pdfFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a PDF file.');
+                return;
+            }
+            formData.append('pdfFile', file);
+            fetch('http://localhost:3000/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('File uploaded successfully:', JSON.parse(data));
+                    // Optionally, display a success message to the user
+                    alert('File uploaded successfully!');
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error);
+                    // Optionally, display an error message to the user
+                    alert('Error uploading file. Please try again.');
+                });
+        });
+    </script>
+</body>
+
+</html>
